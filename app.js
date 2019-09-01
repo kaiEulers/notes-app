@@ -3,10 +3,11 @@ const chalk = require('chalk')
 const yargs = require('yargs')
 const notes = require('./notes.js')
 
-// Create add command
+// ----- Create add command
 yargs.command({
     command: 'add',
     describe: 'Add a new notes',
+    // builder handles parameters of the command. For the command "add", two parameters are required, title and body.
     builder: {
         title: {
             // Description of title
@@ -32,7 +33,7 @@ yargs.command({
     // }
 })
 
-// Create remove command
+// ----- Create remove command
 yargs.command({
     command: 'remove',
     describe: 'Remove a notes',
@@ -46,18 +47,25 @@ yargs.command({
     handler: (argv) => notes.removeNote(argv.title)
 })
 
-// Create list command
+// ----- Create list command
 yargs.command({
     command: 'list',
     describe: 'List notes',
-    handler: () => console.log('List out all notes!')
+    handler: () => notes.listNotes()
 })
 
-// Create read command
+// ----- Create read command
 yargs.command({
     command: 'read',
     describe: 'Read a notes',
-    handler: () => console.log('Reading a notes!')
+    builder : {
+        title: {
+            describe: "Note title",
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler: (argv) => notes.readNote(argv.title)
 })
 
 yargs.parse()

@@ -1,34 +1,30 @@
 const fs = require('fs')
 const chalk = require('chalk')
 
-const getNotes = () =>{
-    return "Your notes..."
-}
-
 // ---------- addNote() adds a new note given its title and body
 const addNote = (title, body) => {
     const notes = loadNotes()
     // If a note title already exists, place note in duplicateNotes
-    // filter() returns elements within an array base on the condition of the function written within it
-    const duplicateNotes = notes.filter((n) => n.title == title)
+    // find() returns the element of an array that satisfy the condition in the function that is passed into it. Otheriwse, find() will return undefined. find() will stop traversing thru the array once the duplicate note title is found.
+    const duplicateNote = notes.find((n) => n.title == title)
 
     // For debugging
     // console.log(duplicateNotes)
 
-    // If there are no notes with the same title, duplicateNotes will have a length of 0
-    if (duplicateNotes.length === 0) {
-        // Push title and body data in notes array
+    // If duplicateNote is undefined, push title and body data onto notes array. Otherqise, print error message.
+    if (!duplicateNote) {
         notes.push({
             title: title,
             body: body
         })
         saveNotes(notes)
-        console.log(chalk.green.bold.inverse('New note added!'))
+        console.log(chalk.green.bold.inverse('\"' + title + '\" added!'))
     }
     else {
-        console.log(chalk.red.bold.inverse('Note title already taken...'))       
+        console.log(chalk.red.bold.inverse('The title \"' + title + '\" is already taken...'))
     }
 }
+
 // ---------- removeNote() removes a note given its title
 const removeNote = (title) => {
     const notes = loadNotes()
@@ -40,20 +36,39 @@ const removeNote = (title) => {
     
     // If the length of notes2Keep and notes are the same, no notes were removed. Otherwise, notes were removed.
     if (notes2Keep.length == notes.length) {
-        console.log(chalk.red.bold.inverse('No note with this title was found...'))
+        console.log(chalk.red.bold.inverse('\"' + title + '\" does not exist...'))
     }
     else {
         saveNotes(notes2Keep)
-        console.log(chalk.green.bold.inverse('Note removed!'))
+        console.log(chalk.green.bold.inverse('\"' + title + '\" removed!'))
     }
-
-    
 }
 
+// ----------listNotes() prints all notes stored in the system
+const listNotes = () => {
+    const notes = loadNotes()
 
+    // Print heading
+    console.log(chalk.bold('Your notes:'))
+    // Print all note titles
+    notes.forEach((n) => console.log(chalk.bold.inverse(n.title)))
+}
 
+// ----------readNotes() prints a note's body given its title
+const readNote = (title) => {
+    const notes = loadNotes()
 
-
+    // Check if note title exists in the array
+    const theNote = notes.find((n) => n.title === title)
+    // If note exist, print its title and body. Otherwise, print error message.
+    if (theNote) {
+        console.log(chalk.bold.inverse(theNote.title))
+        console.log(theNote.body)
+    }
+    else {
+        console.log(chalk.red.bold.inverse(title + ' does not exist...'))
+    }
+}
 
 // saveNotes saves note data as "notes.json"
 const saveNotes = (notes) => {
@@ -72,9 +87,11 @@ const loadNotes = () => {
     }
 }
 
+// Export all functions in the module
 module.exports = {
-    getNotes: getNotes,
     addNote: addNote,
-    removeNote: removeNote
+    removeNote: removeNote,
+    listNotes: listNotes,
+    readNote: readNote
 }
 
